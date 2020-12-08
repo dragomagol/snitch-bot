@@ -30,4 +30,4 @@ async def on_message(message):
                 to_send = eval(msg.split(" ", 1)[0] + "(msg)") 
                 await message.channel.send(to_send) #Sends the returned string.
 
-client.run('NzA0NzA1ODE5MTI3NTc4NzM4.XqhCcA.SHw9904j0QnxvhBX55MjkyjNyh8')
+client.run('token')
