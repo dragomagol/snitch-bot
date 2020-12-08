@@ -88,4 +88,4 @@ def is_in_guild(message): #Checks if the argument contains a valid user.
     except:
         return False
 
-client.run('NzA0NzA1ODE5MTI3NTc4NzM4.XqhCcA.T7-NiuPzK6q5IdOVG8FlmLoHgzM') #Add token here.
+client.run('token') #Add token here.
