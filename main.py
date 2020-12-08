@@ -9,6 +9,7 @@ if c.fetchone()[0] == 1:
   pass
 else:
   c.execute("CREATE TABLE data (user TEXT, pets INTEGER)")
+  conn.commit()
 
 client = discord.Client()
 commands = ["pet", "hi", "stats"] #inits commands
@@ -48,6 +49,8 @@ def pet(message):
     else:
       c.execute("INSERT INTO data VALUES (?,?)", (arg, 1)) #else create a new entry
 
+      
+    conn.commit()
     return "*Pets " + arg + "*" #Takes the argument of the command (mentioning a user)
 
 def hi(msg):
