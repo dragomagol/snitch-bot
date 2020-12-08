@@ -4,7 +4,7 @@ import sqlite3
 conn = sqlite3.connect('data.db')
 c = conn.cursor()
 #Checks if table exists, creates one if it doesnt.
-c.execute(" SELECT count(name) FROM sqlite_master WHERE type='table' AND name='data'")
+c.execute("SELECT count(name) FROM sqlite_master WHERE type='table' AND name='data'")
 if c.fetchone()[0] == 1:
   pass
 else:
@@ -34,9 +34,9 @@ async def on_message(message):
                 await message.channel.send(to_send) #Sends the returned string.
 
 #COMMANDS
+
 def pet(message):
-    msg = message.content
-    arg = msg.split(" ", 1)[1]
+    arg = get_args(message)
     user_in_db = False
     for x in c.execute("SELECT user FROM data"):
         if x[0] == arg:
@@ -48,7 +48,6 @@ def pet(message):
       c.execute("UPDATE data SET pets = ? WHERE user = ?", (current_pets + 1, arg)) #Adds one to pets :)
     else:
       c.execute("INSERT INTO data VALUES (?,?)", (arg, 1)) #else create a new entry
-
       
     conn.commit()
     return "*Pets " + arg + "*" #Takes the argument of the command (mentioning a user)
@@ -57,11 +56,15 @@ def hi(msg):
     return "*chirp*"
   
 def stats(message):
-    msg = message.content
-    arg = msg.split(" ", 1)[1]
+    arg = get_args(message)
     for x in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
       return x[0] + " has been pet " + str(x[1]) + " times!" #Tells us how many times they've been pet
 
 #END OF COMMANDS
+
+def get_args(message):
+    msg = message.content
+    arg = msg.split(" ", 1)[1]
+    return arg
 
 client.run('token') #Add token here.
