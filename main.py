@@ -11,8 +11,10 @@ else:
   c.execute("CREATE TABLE data (user TEXT, pets INTEGER)")
   conn.commit()
 
-client = discord.Client()
+intents = discord.Intents.all() #inits new discord Intents system
+client = discord.Client(intents=intents)
 commands = ["pet", "hi", "stats"] #inits commands
+
 @client.event
 async def on_ready():
     print("Database connected.") #database has connected
@@ -37,20 +39,25 @@ async def on_message(message):
 
 def pet(message):
     arg = get_args(message)
-    user_in_db = False
-    for x in c.execute("SELECT user FROM data"):
-        if x[0] == arg:
-            user_in_db = True
-    
-    if user_in_db: #If user is already in the database
-      c.execute("SELECT pets FROM data WHERE user = ?", (arg,))
-      current_pets = c.fetchone()[0]
-      c.execute("UPDATE data SET pets = ? WHERE user = ?", (current_pets + 1, arg)) #Adds one to pets :)
+    in_guild = is_in_guild(message)
+
+    if in_guild:
+        user_in_db = False
+        for x in c.execute("SELECT user FROM data"):
+            if x[0] == arg:
+                user_in_db = True
+
+        if user_in_db: #If user is already in the database
+            c.execute("SELECT pets FROM data WHERE user = ?", (arg,))
+            current_pets = c.fetchone()[0]
+            c.execute("UPDATE data SET pets = ? WHERE user = ?", (current_pets + 1, arg)) #Adds one to pets :)
+        else:
+            c.execute("INSERT INTO data VALUES (?,?)", (arg, 1)) #else create a new entry
+        
+        conn.commit()
+        return "*Pets " + arg + "*" #Takes the argument of the command (mentioning a user)
     else:
-      c.execute("INSERT INTO data VALUES (?,?)", (arg, 1)) #else create a new entry
-      
-    conn.commit()
-    return "*Pets " + arg + "*" #Takes the argument of the command (mentioning a user)
+        return "Invalid user provided!"
 
 def hi(msg):
     return "*chirp*"
@@ -62,9 +69,23 @@ def stats(message):
 
 #END OF COMMANDS
 
-def get_args(message):
+def get_args(message): #Returns just argument of the message
     msg = message.content
-    arg = msg.split(" ", 1)[1]
-    return arg
+    return msg.split(" ", 1)[1]
 
-client.run('token') #Add token here.
+def is_in_guild(message): #Checks if the argument contains a valid user.
+    try:
+        arg = get_args(message)
+        usr_id = arg[3:-1]
+        guild = client.get_guild(message.guild.id)
+        print(usr_id)
+        for x in guild.members:
+            print(x)
+        if guild.get_member(int(usr_id)) is not None:
+            return True
+        else:
+            return False
+    except:
+        return False
+
+client.run('NzA0NzA1ODE5MTI3NTc4NzM4.XqhCcA.T7-NiuPzK6q5IdOVG8FlmLoHgzM') #Add token here.
