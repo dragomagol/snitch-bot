@@ -67,6 +67,7 @@ def hi(msg):
   
 def stats(message):
     arg = get_args(message)
+
     if (arg == "noarg"):
         return "Invalid argument"
     else:
