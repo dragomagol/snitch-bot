@@ -28,8 +28,8 @@ async def on_message(message):
     if message.content.startswith('.'): #if starts with '.'
         msg = message.content #shortens string var to make easier to concat
         msg = msg.split('.', 1)[1] #removes the '.'
-        for x in commands: #loops through commands
-            if msg.split(" ", 1)[0] == x: #ignores args
+        for command in commands: #loops through commands
+            if msg.split(" ", 1)[0] == command: #ignores args
                 #Takes input, removes the arguments sent by user, executes the func, and sends the original message.
                 #This saves having an if statement for every command.
                 to_send = eval(msg.split(" ", 1)[0] + "(message)") 
@@ -43,8 +43,8 @@ def pet(message):
 
     if in_guild:
         user_in_db = False
-        for x in c.execute("SELECT user FROM data"):
-            if x[0] == arg:
+        for user in c.execute("SELECT user FROM data"):
+            if user[0] == arg:
                 user_in_db = True
 
         if user_in_db: #If user is already in the database
@@ -60,12 +60,12 @@ def pet(message):
         return "Invalid user provided!"
 
 def hi(msg):
-    return "*chirp*"
+    return "*chirp!*"
   
 def stats(message):
     arg = get_args(message)
-    for x in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
-      return x[0] + " has been pet " + str(x[1]) + " times!" #Tells us how many times they've been pet
+    for user in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
+      return user[0] + " has been pet " + str(user[1]) + " times!" #Tells us how many times they've been pet
 
 #END OF COMMANDS
 
