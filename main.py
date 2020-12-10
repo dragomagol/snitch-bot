@@ -13,7 +13,7 @@ else:
 
 intents = discord.Intents.all() #inits new discord Intents system
 client = discord.Client(intents=intents)
-commands = ["pet", "hi", "stats"] #inits commands
+commands = ["pet", "hi", "stats", "help"] #inits commands
 
 @client.event
 async def on_ready():
@@ -66,6 +66,12 @@ def stats(message):
     arg = get_args(message)
     for x in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
       return x[0] + " has been pet " + str(x[1]) + " times!" #Tells us how many times they've been pet
+
+def help:
+    print(".pet %username —— Pets the person you mention. :)")
+    print(".stats %username —— Gets how many times the user you mention has been pet. :)")
+    print(".hi —— chirp")
+    print(".help —— Shows this message.")
 
 #END OF COMMANDS
 
