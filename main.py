@@ -62,30 +62,31 @@ def pet(message):
         else:
             return "Invalid user provided!"
 
-def hi(message):
+def hi(msg):
     return "*chirp!*"
   
 def stats(message):
     arg = get_args(message)
 
     if (arg == "noarg"):
-        return "Invalid argument"
+        return "Invalid argument."
     else:
         for user in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
             return user[0] + " has been pet " + str(user[1]) + " times!" #Tells us how many times they've been pet
 
 def help(message):
-    print(".pet %username —— Pets the person you mention. :)")
-    print(".stats %username —— Gets how many times the user you mention has been pet. :)")
-    print(".hi —— chirp")
-    print(".help —— Shows this message.")
+    return ".pet %username    —— Pets the person you mention. :) \n.stats %username —— Gets how many times the user you mention has been pet. :) \n.hi                              —— chirp \n.help                          —— Shows this message."
 
 #END OF COMMANDS
 
 def get_args(message): #Returns just argument of the message
     try:
         msg = message.content
-        return msg.split(" ", 1)[1]
+        arg = msg.split(" ", 1)[1]
+        if arg[2] != '!':
+          return arg[:2] + "!" + arg[2:]
+        else:
+          return arg
     except:
         return "noarg"
 
