@@ -74,7 +74,7 @@ def stats(message):
         for user in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
             return user[0] + " has been pet " + str(user[1]) + " times!" #Tells us how many times they've been pet
 
-def help:
+def help():
     print(".pet %username —— Pets the person you mention. :)")
     print(".stats %username —— Gets how many times the user you mention has been pet. :)")
     print(".hi —— chirp")
