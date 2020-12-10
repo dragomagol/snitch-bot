@@ -17,7 +17,7 @@ else:
 intents = discord.Intents.all() #inits new discord Intents system
 client = discord.Client(intents=intents)
 
-g = Github("8fa5c825feba677f7d6cdaf6e6a0c4d0020958d9") #Add personal access token, or ("username", "password")
+g = Github("token") #Add personal access token, or ("username", "password")
 repo = g.get_repo("dragomagol/snitch-bot")
 
 @client.event
@@ -145,4 +145,4 @@ commands = {
 #inits commands
 #Keeps commands in a dict, allows the func to be callable instead of using eval()
 
-client.run('NzA0NzA1ODE5MTI3NTc4NzM4.XqhCcA.fhYE0iX0wCVNVX_-CgjVhVtqkuU') #Add token here.
+client.run('token') #Add token here.
