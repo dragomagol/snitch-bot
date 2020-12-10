@@ -13,7 +13,7 @@ else:
 
 intents = discord.Intents.all() #inits new discord Intents system
 client = discord.Client(intents=intents)
-commands = ["pet", "hi", "stats"] #inits commands
+commands = ["pet", "hi", "stats", "help"] #inits commands
 
 @client.event
 async def on_ready():
@@ -39,48 +39,61 @@ async def on_message(message):
 
 def pet(message):
     arg = get_args(message)
-    in_guild = is_in_guild(message)
-
-    if in_guild:
-        user_in_db = False
-        for user in c.execute("SELECT user FROM data"):
-            if user[0] == arg:
-                user_in_db = True
-
-        if user_in_db: #If user is already in the database
-            c.execute("SELECT pets FROM data WHERE user = ?", (arg,))
-            current_pets = c.fetchone()[0]
-            c.execute("UPDATE data SET pets = ? WHERE user = ?", (current_pets + 1, arg)) #Adds one to pets :)
-        else:
-            c.execute("INSERT INTO data VALUES (?,?)", (arg, 1)) #else create a new entry
-        
-        conn.commit()
-        return "*Pets " + arg + "*" #Takes the argument of the command (mentioning a user)
+    if (arg == "noarg"):
+        return "Invalid argument."
     else:
-        return "Invalid user provided!"
+        in_guild = is_in_guild(message)
+
+        if in_guild:
+            user_in_db = False
+            for user in c.execute("SELECT user FROM data"):
+                if user[0] == arg:
+                    user_in_db = True
+
+            if user_in_db: #If user is already in the database
+                c.execute("SELECT pets FROM data WHERE user = ?", (arg,))
+                current_pets = c.fetchone()[0]
+                c.execute("UPDATE data SET pets = ? WHERE user = ?", (current_pets + 1, arg)) #Adds one to pets :)
+            else:
+                c.execute("INSERT INTO data VALUES (?,?)", (arg, 1)) #else create a new entry
+        
+            conn.commit()
+            return "*Pets " + arg + "*" #Takes the argument of the command (mentioning a user)
+        else:
+            return "Invalid user provided!"
 
 def hi(msg):
     return "*chirp!*"
   
 def stats(message):
     arg = get_args(message)
-    for user in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
-      return user[0] + " has been pet " + str(user[1]) + " times!" #Tells us how many times they've been pet
+
+    if (arg == "noarg"):
+        return "Invalid argument"
+    else:
+        for user in c.execute("SELECT * FROM data WHERE user = ?", (arg,)):
+            return user[0] + " has been pet " + str(user[1]) + " times!" #Tells us how many times they've been pet
+
+def help:
+    print(".pet %username —— Pets the person you mention. :)")
+    print(".stats %username —— Gets how many times the user you mention has been pet. :)")
+    print(".hi —— chirp")
+    print(".help —— Shows this message.")
 
 #END OF COMMANDS
 
 def get_args(message): #Returns just argument of the message
-    msg = message.content
-    return msg.split(" ", 1)[1]
+    try:
+        msg = message.content
+        return msg.split(" ", 1)[1]
+    except:
+        return "noarg"
 
 def is_in_guild(message): #Checks if the argument contains a valid user.
     try:
         arg = get_args(message)
         usr_id = arg[3:-1]
         guild = client.get_guild(message.guild.id)
-        print(usr_id)
-        for x in guild.members:
-            print(x)
         if guild.get_member(int(usr_id)) is not None:
             return True
         else:
