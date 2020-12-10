@@ -1,5 +1,7 @@
 import discord
 import sqlite3
+from github import Github
+
 
 #Connects to db
 conn = sqlite3.connect('data.db')
@@ -14,8 +16,9 @@ else:
 
 intents = discord.Intents.all() #inits new discord Intents system
 client = discord.Client(intents=intents)
-commands = ["pet", "_hi", "stats", "_help"] #inits commands
-#commands with _ in front tell the argument handler that the command doesn't require an argument.
+
+g = Github("8fa5c825feba677f7d6cdaf6e6a0c4d0020958d9") #Add personal access token, or ("username", "password")
+repo = g.get_repo("dragomagol/snitch-bot")
 
 @client.event
 async def on_ready():
@@ -30,16 +33,15 @@ async def on_message(message):
     if message.content.startswith('.'): #if starts with '.'
         msg = message.content #shortens string var to make easier to concat
         msg = msg.split('.', 1)[1] #removes the '.'
-        for command in commands: #loops through commands
-            if msg.split(" ", 1)[0] == command: #ignores args
-                #Takes input, removes the arguments sent by user, executes the func, and sends the original message.
-                #This saves having an if statement for every command.
-                to_send = eval(msg.split(" ", 1)[0] + "(message)") 
-                await message.channel.send(to_send) #Sends the returned string.
-            elif ("_" + msg.split(" ", 1)[0]) == command: #Checks to see if the command is available with a _ in front.
-                #This will run the function without an argument, as it's not needed.
-                to_send = eval(msg.split(" ", 1)[0] + "()") 
-                await message.channel.send(to_send)
+
+        if msg.split(" ", 1)[0] in commands: #if msg in commands
+            #accessess the dictionary with the name of the command, turns it into a callable function
+            to_send = commands[msg.split(" ", 1)[0]]
+            await message.channel.send(to_send(message))
+        elif ("_" + msg.split(" ", 1)[0]) in commands:
+            #same thing only without an argument, the _ indicates that it doesnt require an arg.
+            to_send = commands[("_" + msg.split(" ", 1)[0])]
+            await message.channel.send(to_send())
 
 #COMMANDS
 
@@ -83,6 +85,9 @@ def stats(message):
 def help():
     return ".pet %username    —— Pets the person you mention. :) \n.stats %username —— Gets how many times the user you mention has been pet. :) \n.hi                              —— chirp \n.help                          —— Shows this message."
 
+def pr():
+    pass
+
 #END OF COMMANDS
 
 def get_args(message): #Returns just argument of the message
@@ -110,4 +115,14 @@ def is_in_guild(message): #Checks if the argument contains a valid user.
     except:
         return False
 
-client.run('token') #Add token here.
+commands = {
+    "pet": pet,
+    "_hi": hi,
+    "stats": stats,
+    "_help": help,
+    "_pr": pr
+}
+#inits commands
+#Keeps commands in a dict, allows the func to be callable instead of using eval()
+
+client.run('NzA0NzA1ODE5MTI3NTc4NzM4.XqhCcA.fhYE0iX0wCVNVX_-CgjVhVtqkuU') #Add token here.
